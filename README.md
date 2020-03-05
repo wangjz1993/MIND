@@ -1,6 +1,6 @@
 # MIND
 
-MIND模型（Multi-interest network）实现
+MIND模型（Multi-interest network）的tensorflow实现
 
 ## 运行样例
 ```bash
