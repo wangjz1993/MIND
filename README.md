@@ -1,6 +1,6 @@
 # MIND
 
-基于DeepCTR的MIND模型（Multi-interest network）实现
+MIND模型（Multi-interest network）实现
 
 ## 运行样例
 ```bash
