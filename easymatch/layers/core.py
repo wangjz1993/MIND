@@ -24,13 +24,14 @@ class SampledSoftmaxLayer(Layer):
                                          name="bias")
         super(SampledSoftmaxLayer, self).build(input_shape)
 
-    def call(self, inputs, label_idx=None, training=None, **kwargs):
+    def call(self, inputs_with_label_idx, label_idx=None, training=None, **kwargs):
         """
         The first input should be the model as it were, and the second the
         target (i.e., a repeat of the training data) to compute the labels
         argument
 
         """
+        inputs, label_idx = inputs_with_label_idx
         # the labels input to this function is batch size by 1, where the
         # value at position (i, 1) is the index that is true (not zero)
         # e.g., (0, 0, 1) => (2) or (0, 1, 0, 0) => (1)
@@ -114,7 +115,7 @@ class CapsuleLayer(Layer):
                                         trainable=False, name="B", dtype=tf.float32)  # [1,K,H]
         self.S_matrix = self.add_weight(shape=[self.input_units, self.out_units], initializer=self.weight_initializer,
                                         name="S", dtype=tf.float32)
-        super(CapsuleLayer, self).build(input_shape) 
+        super(CapsuleLayer, self).build(input_shape)
 
     def call(self, inputs, **kwargs):  # seq_len:[B,1]
         low_capsule, seq_len = inputs

@@ -10,7 +10,7 @@ def get_xy_fd():
         'gender', 2, embedding_dim=4), SparseFeat('item', 3 + 1, embedding_dim=8),
                        SparseFeat('item_gender', 2 + 1, embedding_dim=4), DenseFeat('score', 1)]
     feature_columns += [
-        VarLenSparseFeat(SparseFeat('hist_item', vocabulary_size=3 + 1, embedding_dim=8, embedding_name='item'),
+        VarLenSparseFeat(SparseFeat('hist_item', vocabulary_size=3 + 1, embedding_dim=20, embedding_name='item'),
                          maxlen=4),
         VarLenSparseFeat(SparseFeat('hist_item_gender', 2 + 1, embedding_dim=4, embedding_name='item_gender'),
                          maxlen=4)]

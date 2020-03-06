@@ -17,9 +17,8 @@ from deepctr.layers.utils import concat_func, NoMask
 from easymatch.layers.core import *
 
 
-def shape_target(target_emb_tmp):
-    reshapeTmp = tf.reshape(target_emb_tmp, [-1, 8])
-    return tf.expand_dims(reshapeTmp, axis=-1)
+def shape_target(target_emb_tmp, target_emb_size):
+    return tf.expand_dims(tf.reshape(target_emb_tmp, [-1, target_emb_size]), axis=-1)
 
 
 def tile_user_otherfeat(user_other_feature, k_max):
@@ -72,7 +71,9 @@ def MIND(dnn_feature_columns, history_feature_list, target_song_size, k_max=2, d
     target_emb_list = embedding_lookup(embedding_dict, features, sparse_feature_columns, ['item'],
                                        history_feature_list, to_list=True)
     target_emb_tmp = concat_func(target_emb_list, mask=False)
-    target_emb = tf.keras.layers.Lambda(shape_target)(target_emb_tmp)
+    target_emb_size = target_emb_tmp.get_shape()[-1].value
+
+    target_emb = tf.keras.layers.Lambda(shape_target, arguments={'target_emb_size': target_emb_size})(target_emb_tmp)
 
     dnn_input_emb_list = embedding_lookup(embedding_dict, features, sparse_feature_columns,
                                           mask_feat_list=history_feature_list, to_list=True)
@@ -83,7 +84,6 @@ def MIND(dnn_feature_columns, history_feature_list, target_song_size, k_max=2, d
 
     deep_input_emb = concat_func(dnn_input_emb_list)
     user_other_feature = Flatten()(deep_input_emb)
-    target_emb_size = history_emb.get_shape()[-1].value
 
     max_len = history_emb.get_shape()[1].value
 
@@ -110,7 +110,7 @@ def MIND(dnn_feature_columns, history_feature_list, target_song_size, k_max=2, d
     )
 
     output = SampledSoftmaxLayer(target_song_size=target_song_size, target_emb_size=target_emb_size)(
-        inputs=user_embedding_final, label_idx=features['item'])
+        inputs=(user_embedding_final, features['item']))
 
     model = Model(inputs=inputs_list, outputs=output)
     return model
